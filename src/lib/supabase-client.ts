@@ -6,7 +6,7 @@ import {
   PlayerGuess, 
   Country 
 } from '@/types/game.types'
-import { generateRoomCode } from './game'
+import { generateRoomCode, getWorldleSettings } from './game'
 
 export class SupabaseClient {
   public supabase = supabase
@@ -211,7 +211,7 @@ export class SupabaseClient {
   async hasPlayerCompletedRound(roundId: string, playerId: string): Promise<{ completed: boolean; attempts: number; won: boolean }> {
     const attempts = await this.getPlayerAttempts(roundId, playerId)
     const hasWon = attempts.some(attempt => attempt.is_correct)
-    const maxAttempts = 6
+    const { maxAttempts } = getWorldleSettings()
     
     return {
       completed: hasWon || attempts.length >= maxAttempts,

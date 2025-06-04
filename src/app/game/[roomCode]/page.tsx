@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { supabaseClient } from '@/lib/supabase-client'
 import { Room, Player, GameRound, Country, PlayerGuess } from '@/types/game.types'
-import { getRandomCountries, getCountryByName, searchCountries } from '@/data/countries'
+import { getRandomCountries, getCountryByName, searchCountries, highlightSearchTerm } from '@/data/countries'
 import { evaluateGuess, calculateWorldleScore, getDirectionArrow, formatDistance, getProximityColor, getWorldleSettings } from '@/lib/game'
 import CountryShape from '@/components/CountryShape'
 
@@ -24,6 +24,9 @@ export default function GamePage() {
   const [isNextRoundLoading, setIsNextRoundLoading] = useState(false)
   const [roundStatus, setRoundStatus] = useState<{ completed: boolean; attempts: number; won: boolean }>({ completed: false, attempts: 0, won: false })
   const [allPlayersStatus, setAllPlayersStatus] = useState<Record<string, boolean>>({})
+  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1)
+  const [showDropdown, setShowDropdown] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const { maxAttempts } = getWorldleSettings()
 
@@ -40,13 +43,18 @@ export default function GamePage() {
   }, [roomCode, router])
 
   useEffect(() => {
-    if (guess.length > 1) {
-      const results = searchCountries(guess)
-      setSuggestions(results.slice(0, 5))
+    if (guess.length > 0) {
+      const guessedCountries = playerAttempts.map(attempt => attempt.guess)
+      const results = searchCountries(guess, guessedCountries)
+      setSuggestions(results)
+      setShowDropdown(results.length > 0)
+      setSelectedSuggestionIndex(-1)
     } else {
       setSuggestions([])
+      setShowDropdown(false)
+      setSelectedSuggestionIndex(-1)
     }
-  }, [guess])
+  }, [guess, playerAttempts])
 
   const loadGameData = async () => {
     try {
@@ -98,6 +106,11 @@ export default function GamePage() {
       if (rooms.status === 'finished') {
         router.push(`/results/${rooms.room_code}`)
       }
+      
+      // Auto-focus input when round loads and not completed
+      if (round && !loading && inputRef.current && !roundStatus.completed) {
+        setTimeout(() => inputRef.current?.focus(), 200)
+      }
 
     } catch (err) {
       console.error('Failed to load game data:', err)
@@ -132,11 +145,49 @@ export default function GamePage() {
       
       setGuess('')
       setSuggestions([])
+      setShowDropdown(false)
+      setSelectedSuggestionIndex(-1)
       await loadGameData()
+      
+      // Focus input for next attempt (with a small delay to ensure the UI has updated)
+      setTimeout(() => {
+        if (inputRef.current && !roundStatus.completed) {
+          inputRef.current.focus()
+        }
+      }, 100)
     } catch (err) {
       console.error('Failed to submit guess:', err)
     } finally {
       setIsSubmitting(false)
+    }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!showDropdown || suggestions.length === 0) return
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault()
+        setSelectedSuggestionIndex(prev => 
+          prev < suggestions.length - 1 ? prev + 1 : 0
+        )
+        break
+      case 'ArrowUp':
+        e.preventDefault()
+        setSelectedSuggestionIndex(prev => 
+          prev > 0 ? prev - 1 : suggestions.length - 1
+        )
+        break
+      case 'Enter':
+        e.preventDefault()
+        if (selectedSuggestionIndex >= 0) {
+          handleSubmitGuess(suggestions[selectedSuggestionIndex].name)
+        }
+        break
+      case 'Escape':
+        setShowDropdown(false)
+        setSelectedSuggestionIndex(-1)
+        break
     }
   }
 
@@ -229,30 +280,58 @@ export default function GamePage() {
                   <div className="space-y-4">
                     <div className="relative max-w-md mx-auto">
                       <input
+                        ref={inputRef}
                         type="text"
-                        placeholder="Enter country name..."
+                        placeholder="Type a country name..."
                         value={guess}
                         onChange={(e) => setGuess(e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        onKeyDown={handleKeyDown}
+                        onFocus={() => setShowDropdown(suggestions.length > 0)}
+                        onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                         disabled={isSubmitting}
+                        autoComplete="off"
                       />
                       
-                      {suggestions.length > 0 && !isSubmitting && (
-                        <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg mt-1 max-h-60 overflow-y-auto">
-                          {suggestions.map((country) => (
+                      {showDropdown && suggestions.length > 0 && !isSubmitting && (
+                        <div className="absolute z-10 w-full bg-white border-2 border-gray-200 rounded-lg mt-1 max-h-60 overflow-y-auto shadow-lg">
+                          {suggestions.map((country, index) => (
                             <button
                               key={country.code}
+                              ref={index === selectedSuggestionIndex ? (el) => el?.scrollIntoView({ block: 'nearest' }) : undefined}
                               onClick={() => handleSubmitGuess(country.name)}
-                              className="w-full text-left px-4 py-2 hover:bg-gray-100 border-b border-gray-100 last:border-b-0 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                              className={`w-full text-left px-4 py-3 border-b border-gray-100 last:border-b-0 flex items-center gap-3 transition-colors ${
+                                index === selectedSuggestionIndex 
+                                  ? 'bg-blue-50 border-l-4 border-l-blue-500' 
+                                  : 'hover:bg-gray-50'
+                              }`}
                               disabled={isSubmitting}
                             >
-                              <span className="text-lg">{country.flag}</span>
-                              <span>{country.name}</span>
+                              <span className="text-xl">{country.flag}</span>
+                              <div 
+                                className="font-medium text-gray-900"
+                                dangerouslySetInnerHTML={{ 
+                                  __html: highlightSearchTerm(country.name, guess) 
+                                }}
+                              />
                             </button>
                           ))}
                         </div>
                       )}
+                      
+                      {guess.length > 0 && suggestions.length === 0 && !isSubmitting && (
+                        <div className="absolute z-10 w-full bg-white border-2 border-gray-200 rounded-lg mt-1 p-4 text-center text-gray-500 shadow-lg">
+                          No countries found matching "{guess}"
+                        </div>
+                      )}
                     </div>
+                    
+                    {/* Keyboard navigation hints */}
+                    {showDropdown && suggestions.length > 0 && (
+                      <div className="text-xs text-gray-500 text-center">
+                        Use ↑↓ arrow keys to navigate, Enter to select, Esc to close
+                      </div>
+                    )}
                     
                   </div>
                 )}
@@ -279,12 +358,17 @@ export default function GamePage() {
                 <div className="bg-white border rounded-lg p-4 mb-6">
                   <h3 className="font-semibold text-gray-900 mb-3">Your Attempts</h3>
                   <div className="space-y-2">
-                    {playerAttempts.map((attempt, index) => (
-                      <div key={attempt.id} className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
+                    {playerAttempts.map((attempt, index) => {
+                      const guessedCountry = getCountryByName(attempt.guess)
+                      return (
+                      <div key={attempt.id} className={`flex items-center gap-4 p-3 rounded-lg ${
+                        attempt.is_correct ? 'bg-green-50 border border-green-200' : 'bg-gray-50'
+                      }`}>
                         <div className="flex items-center gap-2 flex-1">
                           <span className="text-sm font-medium text-gray-600">#{index + 1}</span>
+                          <span className="text-lg">{guessedCountry?.flag || '🏳️'}</span>
                           <span className="font-medium">{attempt.guess}</span>
-                          {attempt.is_correct && <span className="text-green-600">✓</span>}
+                          {attempt.is_correct && <span className="text-green-600 text-lg">✓</span>}
                         </div>
                         {!attempt.is_correct && (
                           <>
@@ -303,7 +387,8 @@ export default function GamePage() {
                           </div>
                         )}
                       </div>
-                    ))}
+                      )
+                    })}
                     
                     {isSubmitting && (
                       <div className="flex items-center gap-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">

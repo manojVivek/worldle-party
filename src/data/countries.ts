@@ -226,10 +226,51 @@ export function getCountryByName(name: string): Country | undefined {
   )
 }
 
-export function searchCountries(query: string): Country[] {
+export function searchCountries(query: string, excludeGuessed: string[] = []): Country[] {
+  if (!query || query.length < 1) return []
+  
   const lowercaseQuery = query.toLowerCase()
-  return COUNTRIES.filter(country =>
-    country.name.toLowerCase().includes(lowercaseQuery) ||
-    country.capital.toLowerCase().includes(lowercaseQuery)
-  )
+  const guessedLowercase = excludeGuessed.map(g => g.toLowerCase())
+  
+  // First, get exact matches
+  const exactMatches = COUNTRIES.filter(country => {
+    const name = country.name.toLowerCase()
+    const capital = country.capital.toLowerCase()
+    return !guessedLowercase.includes(name) && (
+      name === lowercaseQuery ||
+      capital === lowercaseQuery
+    )
+  })
+  
+  // Then get prefix matches
+  const prefixMatches = COUNTRIES.filter(country => {
+    const name = country.name.toLowerCase()
+    const capital = country.capital.toLowerCase()
+    return !guessedLowercase.includes(name) && (
+      (name.startsWith(lowercaseQuery) || capital.startsWith(lowercaseQuery)) &&
+      !exactMatches.includes(country)
+    )
+  })
+  
+  // Finally get substring matches
+  const substringMatches = COUNTRIES.filter(country => {
+    const name = country.name.toLowerCase()
+    const capital = country.capital.toLowerCase()
+    return !guessedLowercase.includes(name) && (
+      (name.includes(lowercaseQuery) || capital.includes(lowercaseQuery)) &&
+      !exactMatches.includes(country) &&
+      !prefixMatches.includes(country)
+    )
+  })
+  
+  // Combine results with exact matches first, then prefix, then substring
+  return [...exactMatches, ...prefixMatches, ...substringMatches].slice(0, 8)
+}
+
+// Helper function to highlight search terms in text
+export function highlightSearchTerm(text: string, searchTerm: string): string {
+  if (!searchTerm) return text
+  
+  const regex = new RegExp(`(${searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi')
+  return text.replace(regex, '<mark class="bg-yellow-200 text-yellow-900">$1</mark>')
 }

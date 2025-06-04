@@ -108,10 +108,7 @@ export function getProximityColor(proximity: number): string {
 
 // Format distance for display
 export function formatDistance(distance: number): string {
-  if (distance >= 1000) {
-    return `${(distance / 1000).toFixed(1)}k km`
-  }
-  return `${distance} km`
+  return `${distance.toLocaleString()} km`
 }
 
 // Constants for Worldle game
