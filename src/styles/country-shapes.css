@@ -1,0 +1,97 @@
+/* Country shape SVG styling */
+.country-shape-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.country-shape-container svg {
+  /* Scale down to fit within container while maintaining aspect ratio */
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+  /* Force SVG to scale properly and center it */
+  transform: scale(0.9); /* Scale down to 90% to ensure it fits with padding */
+  transform-origin: center center;
+}
+
+/* Ensure the inner div containing SVG centers properly */
+.country-shape-container > div {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+/* Style all paths in country SVGs */
+.country-shape-container svg path {
+  fill: #4F46E5 !important;
+  stroke: #312E81 !important;
+  stroke-width: 1 !important;
+  transition: fill 0.3s ease;
+}
+
+/* Hover effects */
+.country-shape-container:hover svg path {
+  fill: #4338CA !important;
+}
+
+/* Different color schemes for different game states */
+.country-shape-container.correct svg path {
+  fill: #10B981 !important;
+  stroke: #047857 !important;
+}
+
+.country-shape-container.incorrect svg path {
+  fill: #EF4444 !important;
+  stroke: #B91C1C !important;
+}
+
+.country-shape-container.revealed svg path {
+  fill: #F59E0B !important;
+  stroke: #D97706 !important;
+}
+
+/* Animation for shape reveal */
+.country-shape-container.animate-reveal svg path {
+  animation: shape-reveal 0.8s ease-out;
+}
+
+@keyframes shape-reveal {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Loading animation for shapes */
+.country-shape-loading {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

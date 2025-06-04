@@ -1,0 +1,790 @@
+[
+  {
+    "code": "DZ",
+    "status": "downloaded"
+  },
+  {
+    "code": "AO",
+    "status": "downloaded"
+  },
+  {
+    "code": "BJ",
+    "status": "downloaded"
+  },
+  {
+    "code": "BW",
+    "status": "downloaded"
+  },
+  {
+    "code": "BF",
+    "status": "downloaded"
+  },
+  {
+    "code": "BI",
+    "status": "downloaded"
+  },
+  {
+    "code": "CV",
+    "status": "downloaded"
+  },
+  {
+    "code": "CM",
+    "status": "downloaded"
+  },
+  {
+    "code": "CF",
+    "status": "downloaded"
+  },
+  {
+    "code": "TD",
+    "status": "downloaded"
+  },
+  {
+    "code": "KM",
+    "status": "downloaded"
+  },
+  {
+    "code": "CG",
+    "status": "downloaded"
+  },
+  {
+    "code": "CD",
+    "status": "downloaded"
+  },
+  {
+    "code": "CI",
+    "status": "downloaded"
+  },
+  {
+    "code": "DJ",
+    "status": "downloaded"
+  },
+  {
+    "code": "EG",
+    "status": "downloaded"
+  },
+  {
+    "code": "GQ",
+    "status": "downloaded"
+  },
+  {
+    "code": "ER",
+    "status": "downloaded"
+  },
+  {
+    "code": "SZ",
+    "status": "downloaded"
+  },
+  {
+    "code": "ET",
+    "status": "downloaded"
+  },
+  {
+    "code": "GA",
+    "status": "downloaded"
+  },
+  {
+    "code": "GM",
+    "status": "downloaded"
+  },
+  {
+    "code": "GH",
+    "status": "downloaded"
+  },
+  {
+    "code": "GN",
+    "status": "downloaded"
+  },
+  {
+    "code": "GW",
+    "status": "downloaded"
+  },
+  {
+    "code": "KE",
+    "status": "downloaded"
+  },
+  {
+    "code": "LS",
+    "status": "downloaded"
+  },
+  {
+    "code": "LR",
+    "status": "downloaded"
+  },
+  {
+    "code": "LY",
+    "status": "downloaded"
+  },
+  {
+    "code": "MG",
+    "status": "downloaded"
+  },
+  {
+    "code": "MW",
+    "status": "downloaded"
+  },
+  {
+    "code": "ML",
+    "status": "downloaded"
+  },
+  {
+    "code": "MR",
+    "status": "downloaded"
+  },
+  {
+    "code": "MU",
+    "status": "downloaded"
+  },
+  {
+    "code": "MA",
+    "status": "downloaded"
+  },
+  {
+    "code": "MZ",
+    "status": "downloaded"
+  },
+  {
+    "code": "NA",
+    "status": "downloaded"
+  },
+  {
+    "code": "NE",
+    "status": "downloaded"
+  },
+  {
+    "code": "NG",
+    "status": "downloaded"
+  },
+  {
+    "code": "RW",
+    "status": "downloaded"
+  },
+  {
+    "code": "ST",
+    "status": "downloaded"
+  },
+  {
+    "code": "SN",
+    "status": "downloaded"
+  },
+  {
+    "code": "SC",
+    "status": "downloaded"
+  },
+  {
+    "code": "SL",
+    "status": "downloaded"
+  },
+  {
+    "code": "SO",
+    "status": "downloaded"
+  },
+  {
+    "code": "ZA",
+    "status": "downloaded"
+  },
+  {
+    "code": "SS",
+    "status": "downloaded"
+  },
+  {
+    "code": "SD",
+    "status": "downloaded"
+  },
+  {
+    "code": "TZ",
+    "status": "downloaded"
+  },
+  {
+    "code": "TG",
+    "status": "downloaded"
+  },
+  {
+    "code": "TN",
+    "status": "downloaded"
+  },
+  {
+    "code": "UG",
+    "status": "downloaded"
+  },
+  {
+    "code": "ZM",
+    "status": "downloaded"
+  },
+  {
+    "code": "ZW",
+    "status": "downloaded"
+  },
+  {
+    "code": "AF",
+    "status": "downloaded"
+  },
+  {
+    "code": "AM",
+    "status": "downloaded"
+  },
+  {
+    "code": "AZ",
+    "status": "downloaded"
+  },
+  {
+    "code": "BH",
+    "status": "downloaded"
+  },
+  {
+    "code": "BD",
+    "status": "downloaded"
+  },
+  {
+    "code": "BT",
+    "status": "downloaded"
+  },
+  {
+    "code": "BN",
+    "status": "downloaded"
+  },
+  {
+    "code": "KH",
+    "status": "downloaded"
+  },
+  {
+    "code": "CN",
+    "status": "downloaded"
+  },
+  {
+    "code": "GE",
+    "status": "downloaded"
+  },
+  {
+    "code": "IN",
+    "status": "downloaded"
+  },
+  {
+    "code": "ID",
+    "status": "downloaded"
+  },
+  {
+    "code": "IR",
+    "status": "downloaded"
+  },
+  {
+    "code": "IQ",
+    "status": "downloaded"
+  },
+  {
+    "code": "IL",
+    "status": "downloaded"
+  },
+  {
+    "code": "JP",
+    "status": "downloaded"
+  },
+  {
+    "code": "JO",
+    "status": "downloaded"
+  },
+  {
+    "code": "KZ",
+    "status": "downloaded"
+  },
+  {
+    "code": "KW",
+    "status": "downloaded"
+  },
+  {
+    "code": "KG",
+    "status": "downloaded"
+  },
+  {
+    "code": "LA",
+    "status": "downloaded"
+  },
+  {
+    "code": "LB",
+    "status": "downloaded"
+  },
+  {
+    "code": "MY",
+    "status": "downloaded"
+  },
+  {
+    "code": "MV",
+    "status": "downloaded"
+  },
+  {
+    "code": "MN",
+    "status": "downloaded"
+  },
+  {
+    "code": "MM",
+    "status": "downloaded"
+  },
+  {
+    "code": "NP",
+    "status": "downloaded"
+  },
+  {
+    "code": "KP",
+    "status": "downloaded"
+  },
+  {
+    "code": "OM",
+    "status": "downloaded"
+  },
+  {
+    "code": "PK",
+    "status": "downloaded"
+  },
+  {
+    "code": "PS",
+    "status": "downloaded"
+  },
+  {
+    "code": "PH",
+    "status": "downloaded"
+  },
+  {
+    "code": "QA",
+    "status": "downloaded"
+  },
+  {
+    "code": "RU",
+    "status": "downloaded"
+  },
+  {
+    "code": "SA",
+    "status": "downloaded"
+  },
+  {
+    "code": "SG",
+    "status": "downloaded"
+  },
+  {
+    "code": "KR",
+    "status": "downloaded"
+  },
+  {
+    "code": "LK",
+    "status": "downloaded"
+  },
+  {
+    "code": "SY",
+    "status": "downloaded"
+  },
+  {
+    "code": "TW",
+    "status": "downloaded"
+  },
+  {
+    "code": "TJ",
+    "status": "downloaded"
+  },
+  {
+    "code": "TH",
+    "status": "downloaded"
+  },
+  {
+    "code": "TL",
+    "status": "downloaded"
+  },
+  {
+    "code": "TR",
+    "status": "downloaded"
+  },
+  {
+    "code": "TM",
+    "status": "downloaded"
+  },
+  {
+    "code": "AE",
+    "status": "downloaded"
+  },
+  {
+    "code": "UZ",
+    "status": "downloaded"
+  },
+  {
+    "code": "VN",
+    "status": "downloaded"
+  },
+  {
+    "code": "YE",
+    "status": "downloaded"
+  },
+  {
+    "code": "AL",
+    "status": "downloaded"
+  },
+  {
+    "code": "AD",
+    "status": "downloaded"
+  },
+  {
+    "code": "AT",
+    "status": "downloaded"
+  },
+  {
+    "code": "BY",
+    "status": "downloaded"
+  },
+  {
+    "code": "BE",
+    "status": "downloaded"
+  },
+  {
+    "code": "BA",
+    "status": "downloaded"
+  },
+  {
+    "code": "BG",
+    "status": "downloaded"
+  },
+  {
+    "code": "HR",
+    "status": "downloaded"
+  },
+  {
+    "code": "CY",
+    "status": "downloaded"
+  },
+  {
+    "code": "CZ",
+    "status": "downloaded"
+  },
+  {
+    "code": "DK",
+    "status": "downloaded"
+  },
+  {
+    "code": "EE",
+    "status": "downloaded"
+  },
+  {
+    "code": "FI",
+    "status": "downloaded"
+  },
+  {
+    "code": "FR",
+    "status": "downloaded"
+  },
+  {
+    "code": "DE",
+    "status": "downloaded"
+  },
+  {
+    "code": "GR",
+    "status": "downloaded"
+  },
+  {
+    "code": "HU",
+    "status": "downloaded"
+  },
+  {
+    "code": "IS",
+    "status": "downloaded"
+  },
+  {
+    "code": "IE",
+    "status": "downloaded"
+  },
+  {
+    "code": "IT",
+    "status": "downloaded"
+  },
+  {
+    "code": "XK",
+    "status": "downloaded"
+  },
+  {
+    "code": "LV",
+    "status": "downloaded"
+  },
+  {
+    "code": "LI",
+    "status": "downloaded"
+  },
+  {
+    "code": "LT",
+    "status": "downloaded"
+  },
+  {
+    "code": "LU",
+    "status": "downloaded"
+  },
+  {
+    "code": "MT",
+    "status": "downloaded"
+  },
+  {
+    "code": "MD",
+    "status": "downloaded"
+  },
+  {
+    "code": "MC",
+    "status": "downloaded"
+  },
+  {
+    "code": "ME",
+    "status": "downloaded"
+  },
+  {
+    "code": "NL",
+    "status": "downloaded"
+  },
+  {
+    "code": "MK",
+    "status": "downloaded"
+  },
+  {
+    "code": "NO",
+    "status": "downloaded"
+  },
+  {
+    "code": "PL",
+    "status": "downloaded"
+  },
+  {
+    "code": "PT",
+    "status": "downloaded"
+  },
+  {
+    "code": "RO",
+    "status": "downloaded"
+  },
+  {
+    "code": "SM",
+    "status": "downloaded"
+  },
+  {
+    "code": "RS",
+    "status": "downloaded"
+  },
+  {
+    "code": "SK",
+    "status": "downloaded"
+  },
+  {
+    "code": "SI",
+    "status": "downloaded"
+  },
+  {
+    "code": "ES",
+    "status": "downloaded"
+  },
+  {
+    "code": "SE",
+    "status": "downloaded"
+  },
+  {
+    "code": "CH",
+    "status": "downloaded"
+  },
+  {
+    "code": "UA",
+    "status": "downloaded"
+  },
+  {
+    "code": "GB",
+    "status": "downloaded"
+  },
+  {
+    "code": "VA",
+    "status": "downloaded"
+  },
+  {
+    "code": "CA",
+    "status": "downloaded"
+  },
+  {
+    "code": "US",
+    "status": "downloaded"
+  },
+  {
+    "code": "AG",
+    "status": "downloaded"
+  },
+  {
+    "code": "AR",
+    "status": "downloaded"
+  },
+  {
+    "code": "BS",
+    "status": "downloaded"
+  },
+  {
+    "code": "BB",
+    "status": "downloaded"
+  },
+  {
+    "code": "BZ",
+    "status": "downloaded"
+  },
+  {
+    "code": "BO",
+    "status": "downloaded"
+  },
+  {
+    "code": "BR",
+    "status": "downloaded"
+  },
+  {
+    "code": "CL",
+    "status": "downloaded"
+  },
+  {
+    "code": "CO",
+    "status": "downloaded"
+  },
+  {
+    "code": "CR",
+    "status": "downloaded"
+  },
+  {
+    "code": "CU",
+    "status": "downloaded"
+  },
+  {
+    "code": "DM",
+    "status": "downloaded"
+  },
+  {
+    "code": "DO",
+    "status": "downloaded"
+  },
+  {
+    "code": "EC",
+    "status": "downloaded"
+  },
+  {
+    "code": "SV",
+    "status": "downloaded"
+  },
+  {
+    "code": "GD",
+    "status": "downloaded"
+  },
+  {
+    "code": "GT",
+    "status": "downloaded"
+  },
+  {
+    "code": "GY",
+    "status": "downloaded"
+  },
+  {
+    "code": "HT",
+    "status": "downloaded"
+  },
+  {
+    "code": "HN",
+    "status": "downloaded"
+  },
+  {
+    "code": "JM",
+    "status": "downloaded"
+  },
+  {
+    "code": "MX",
+    "status": "downloaded"
+  },
+  {
+    "code": "NI",
+    "status": "downloaded"
+  },
+  {
+    "code": "PA",
+    "status": "downloaded"
+  },
+  {
+    "code": "PY",
+    "status": "downloaded"
+  },
+  {
+    "code": "PE",
+    "status": "downloaded"
+  },
+  {
+    "code": "KN",
+    "status": "downloaded"
+  },
+  {
+    "code": "LC",
+    "status": "downloaded"
+  },
+  {
+    "code": "VC",
+    "status": "downloaded"
+  },
+  {
+    "code": "SR",
+    "status": "downloaded"
+  },
+  {
+    "code": "TT",
+    "status": "downloaded"
+  },
+  {
+    "code": "UY",
+    "status": "downloaded"
+  },
+  {
+    "code": "VE",
+    "status": "downloaded"
+  },
+  {
+    "code": "AU",
+    "status": "downloaded"
+  },
+  {
+    "code": "FJ",
+    "status": "downloaded"
+  },
+  {
+    "code": "KI",
+    "status": "downloaded"
+  },
+  {
+    "code": "MH",
+    "status": "downloaded"
+  },
+  {
+    "code": "FM",
+    "status": "downloaded"
+  },
+  {
+    "code": "NR",
+    "status": "downloaded"
+  },
+  {
+    "code": "NZ",
+    "status": "downloaded"
+  },
+  {
+    "code": "PW",
+    "status": "downloaded"
+  },
+  {
+    "code": "PG",
+    "status": "downloaded"
+  },
+  {
+    "code": "WS",
+    "status": "downloaded"
+  },
+  {
+    "code": "SB",
+    "status": "downloaded"
+  },
+  {
+    "code": "TO",
+    "status": "downloaded"
+  },
+  {
+    "code": "TV",
+    "status": "downloaded"
+  },
+  {
+    "code": "VU",
+    "status": "downloaded"
+  }
+]

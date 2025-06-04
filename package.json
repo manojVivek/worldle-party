@@ -6,22 +6,33 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:migrate": "supabase db push",
+    "db:migrate:local": "supabase db reset",
+    "db:generate-types": "supabase gen types typescript --project-id ptlnitafbuflfijdambr --schema public > src/types/database.types.ts",
+    "fetch-country-svgs": "node scripts/fetch-country-svgs.js"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.49.8",
+    "d3-geo": "^3.1.1",
+    "next": "15.3.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "next": "15.3.3"
+    "topojson-client": "^3.1.0"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/d3-geo": "^3.1.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
+    "@types/topojson-client": "^3.1.5",
+    "@types/topojson-specification": "^1.0.5",
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
-    "@eslint/eslintrc": "^3"
+    "supabase": "^2.23.4",
+    "tailwindcss": "^4",
+    "typescript": "^5"
   }
 }
