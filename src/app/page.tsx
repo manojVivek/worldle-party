@@ -58,29 +58,29 @@ export default function Home() {
   return (
     <>
       <NaturalEarthPreloader />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">🌍 Worldle</h1>
-          <p className="text-lg text-gray-600">Multiplayer Country Guessing Game</p>
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">🌍 WorldleParty</h1>
+          <p className="text-lg text-gray-600 dark:text-gray-300">Multiplayer Country Guessing Game</p>
         </div>
 
-        <div className="bg-white rounded-xl shadow-lg p-6 space-y-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 space-y-6">
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-              <p className="text-red-700 text-sm">{error}</p>
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
+              <p className="text-red-700 dark:text-red-400 text-sm">{error}</p>
             </div>
           )}
 
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Create a Room</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Create a Room</h2>
             <form onSubmit={handleCreateRoom} className="space-y-3">
               <input
                 type="text"
                 placeholder="Enter your name"
                 value={hostName}
                 onChange={(e) => setHostName(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 maxLength={50}
                 disabled={isCreating}
               />
@@ -110,14 +110,14 @@ export default function Home() {
           </div>
 
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Join a Room</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Join a Room</h2>
             <form onSubmit={handleJoinRoom} className="space-y-3">
               <input
                 type="text"
                 placeholder="Room code (e.g., ABC123)"
                 value={joinCode}
                 onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent uppercase"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent uppercase"
                 maxLength={6}
                 disabled={isJoining}
               />
@@ -126,7 +126,7 @@ export default function Home() {
                 placeholder="Enter your name"
                 value={playerName}
                 onChange={(e) => setPlayerName(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 maxLength={50}
                 disabled={isJoining}
               />
@@ -147,7 +147,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="text-center mt-6 text-sm text-gray-500">
+        <div className="text-center mt-6 text-sm text-gray-500 dark:text-gray-400">
           <p>Guess countries by their shape with your friends in real-time!</p>
         </div>
       </div>

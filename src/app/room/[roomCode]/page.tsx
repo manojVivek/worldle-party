@@ -132,40 +132,40 @@ export default function RoomPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-6">
           <div className="text-center mb-6">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">🌍 Room Lobby</h1>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">🌍 WorldleParty Lobby</h1>
             <div className="flex items-center justify-center gap-2 mb-2">
-              <span className="text-2xl font-mono font-bold text-blue-600">{room.room_code}</span>
+              <span className="text-2xl font-mono font-bold text-blue-600 dark:text-blue-400">{room.room_code}</span>
               <button
                 onClick={copyRoomCode}
-                className="text-blue-600 hover:text-blue-700 p-1"
+                className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 p-1"
                 title="Copy room code"
               >
                 📋
               </button>
             </div>
-            <p className="text-gray-600">Share this code with your friends!</p>
+            <p className="text-gray-600 dark:text-gray-300">Share this code with your friends!</p>
           </div>
 
-          <div className="bg-gray-50 rounded-lg p-4 mb-6">
-            <h3 className="font-semibold text-gray-900 mb-3">Game Settings</h3>
+          <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-6">
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Game Settings</h3>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <span className="text-gray-600">Total Rounds:</span>
-                <span className="ml-2 font-medium">{room.total_rounds}</span>
+                <span className="text-gray-600 dark:text-gray-300">Total Rounds:</span>
+                <span className="ml-2 font-medium text-gray-900 dark:text-white">{room.total_rounds}</span>
               </div>
               <div>
-                <span className="text-gray-600">Host:</span>
-                <span className="ml-2 font-medium">{room.host_name}</span>
+                <span className="text-gray-600 dark:text-gray-300">Host:</span>
+                <span className="ml-2 font-medium text-gray-900 dark:text-white">{room.host_name}</span>
               </div>
             </div>
           </div>
 
           <div className="mb-6">
-            <h3 className="font-semibold text-gray-900 mb-3">
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
               Players ({players.length})
             </h3>
             <div className="space-y-2">
@@ -174,19 +174,19 @@ export default function RoomPage() {
                   key={player.id}
                   className={`flex items-center justify-between p-3 rounded-lg ${
                     player.id === currentPlayerId
-                      ? 'bg-blue-50 border-2 border-blue-200'
-                      : 'bg-gray-50'
+                      ? 'bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800'
+                      : 'bg-gray-50 dark:bg-gray-700'
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                    <span className="font-medium">{player.name}</span>
+                    <span className="font-medium text-gray-900 dark:text-white">{player.name}</span>
                     {player.is_host && (
-                      <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">
+                      <span className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400 text-xs px-2 py-1 rounded-full">
                         Host
                       </span>
                     )}
                     {player.id === currentPlayerId && (
-                      <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                      <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 text-xs px-2 py-1 rounded-full">
                         You
                       </span>
                     )}
@@ -211,15 +211,15 @@ export default function RoomPage() {
                 )}
                 {isStarting ? 'Starting Game...' : 'Start Game'}
               </button>
-              <p className="text-center text-sm text-gray-500 mt-2">
+              <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-2">
                 Only the host can start the game
               </p>
             </div>
           )}
 
           {!isHost && (
-            <div className="border-t pt-6 text-center">
-              <p className="text-gray-600">Waiting for host to start the game...</p>
+            <div className="border-t dark:border-gray-600 pt-6 text-center">
+              <p className="text-gray-600 dark:text-gray-300">Waiting for host to start the game...</p>
               <div className="flex justify-center mt-3">
                 <div className="animate-pulse flex space-x-1">
                   <div className="h-2 w-2 bg-blue-600 rounded-full"></div>
@@ -234,7 +234,7 @@ export default function RoomPage() {
         <div className="text-center">
           <button
             onClick={() => router.push('/')}
-            className="text-gray-600 hover:text-gray-700 transition-colors"
+            className="text-gray-600 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
           >
             ← Back to Home
           </button>

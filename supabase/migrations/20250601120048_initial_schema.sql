@@ -1,4 +1,4 @@
--- Database schema for Worldle Multiplayer
+-- Database schema for WorldleParty
 
 -- Rooms table
 CREATE TABLE rooms (

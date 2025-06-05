@@ -1,4 +1,4 @@
-# Worldle Multiplayer
+# WorldleParty
 
 A multiplayer version of the country guessing game Worldle, built with Next.js, TypeScript, and Supabase.
 

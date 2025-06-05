@@ -220,10 +220,10 @@ export default function GamePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading game...</p>
+          <p className="text-gray-600 dark:text-gray-300">Loading game...</p>
         </div>
       </div>
     )
@@ -231,9 +231,9 @@ export default function GamePage() {
 
   if (!room || !currentRound || !currentCountry) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600">Game not found</p>
+          <p className="text-gray-600 dark:text-gray-300">Game not found</p>
           <button
             onClick={() => router.push('/')}
             className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
@@ -246,21 +246,21 @@ export default function GamePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="max-w-6xl mx-auto">
-        <div className="bg-white rounded-xl shadow-lg p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                 Round {room.current_round} of {room.total_rounds}
               </h1>
-              <p className="text-gray-600">Room: {room.room_code}</p>
+              <p className="text-gray-600 dark:text-gray-300">Room: {room.room_code}</p>
             </div>
             <div className="text-right">
-              <div className="text-lg font-semibold text-blue-600">
+              <div className="text-lg font-semibold text-blue-600 dark:text-blue-400">
                 {roundStatus.attempts}/{maxAttempts} attempts
               </div>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 dark:text-gray-300">
                 {roundStatus.completed ? (roundStatus.won ? 'Completed!' : 'Failed') : 'In progress'}
               </p>
             </div>
@@ -268,11 +268,11 @@ export default function GamePage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             <div className="lg:col-span-3">
-              <div className="bg-gray-100 rounded-lg p-8 mb-6 text-center">
+              <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-8 mb-6 text-center">
                 <div className="mb-6 flex justify-center">
                   <CountryShape countryCode={currentCountry.code} className="h-48 w-full max-w-md" />
                 </div>
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                   What country is this?
                 </h2>
                 
@@ -288,28 +288,28 @@ export default function GamePage() {
                         onKeyDown={handleKeyDown}
                         onFocus={() => setShowDropdown(suggestions.length > 0)}
                         onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                        className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                         disabled={isSubmitting}
                         autoComplete="off"
                       />
                       
                       {showDropdown && suggestions.length > 0 && !isSubmitting && (
-                        <div className="absolute z-10 w-full bg-white border-2 border-gray-200 rounded-lg mt-1 max-h-60 overflow-y-auto shadow-lg">
+                        <div className="absolute z-10 w-full bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 rounded-lg mt-1 max-h-60 overflow-y-auto shadow-lg">
                           {suggestions.map((country, index) => (
                             <button
                               key={country.code}
                               ref={index === selectedSuggestionIndex ? (el) => el?.scrollIntoView({ block: 'nearest' }) : undefined}
                               onClick={() => handleSubmitGuess(country.name)}
-                              className={`w-full text-left px-4 py-3 border-b border-gray-100 last:border-b-0 flex items-center gap-3 transition-colors ${
+                              className={`w-full text-left px-4 py-3 border-b border-gray-100 dark:border-gray-700 last:border-b-0 flex items-center gap-3 transition-colors ${
                                 index === selectedSuggestionIndex 
-                                  ? 'bg-blue-50 border-l-4 border-l-blue-500' 
-                                  : 'hover:bg-gray-50'
+                                  ? 'bg-blue-50 dark:bg-blue-900/20 border-l-4 border-l-blue-500' 
+                                  : 'hover:bg-gray-50 dark:hover:bg-gray-700'
                               }`}
                               disabled={isSubmitting}
                             >
                               <span className="text-xl">{country.flag}</span>
                               <div 
-                                className="font-medium text-gray-900"
+                                className="font-medium text-gray-900 dark:text-white"
                                 dangerouslySetInnerHTML={{ 
                                   __html: highlightSearchTerm(country.name, guess) 
                                 }}
@@ -320,7 +320,7 @@ export default function GamePage() {
                       )}
                       
                       {guess.length > 0 && suggestions.length === 0 && !isSubmitting && (
-                        <div className="absolute z-10 w-full bg-white border-2 border-gray-200 rounded-lg mt-1 p-4 text-center text-gray-500 shadow-lg">
+                        <div className="absolute z-10 w-full bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 rounded-lg mt-1 p-4 text-center text-gray-500 dark:text-gray-400 shadow-lg">
                           No countries found matching "{guess}"
                         </div>
                       )}
@@ -328,7 +328,7 @@ export default function GamePage() {
                     
                     {/* Keyboard navigation hints */}
                     {showDropdown && suggestions.length > 0 && (
-                      <div className="text-xs text-gray-500 text-center">
+                      <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
                         Use ↑↓ arrow keys to navigate, Enter to select, Esc to close
                       </div>
                     )}
@@ -355,25 +355,25 @@ export default function GamePage() {
 
               {/* Player's Attempts */}
               {(playerAttempts.length > 0 || isSubmitting) && (
-                <div className="bg-white border rounded-lg p-4 mb-6">
-                  <h3 className="font-semibold text-gray-900 mb-3">Your Attempts</h3>
+                <div className="bg-white dark:bg-gray-800 border dark:border-gray-600 rounded-lg p-4 mb-6">
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Your Attempts</h3>
                   <div className="space-y-2">
                     {playerAttempts.map((attempt, index) => {
                       const guessedCountry = getCountryByName(attempt.guess)
                       return (
                       <div key={attempt.id} className={`flex items-center gap-4 p-3 rounded-lg ${
-                        attempt.is_correct ? 'bg-green-50 border border-green-200' : 'bg-gray-50'
+                        attempt.is_correct ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800' : 'bg-gray-50 dark:bg-gray-700'
                       }`}>
                         <div className="flex items-center gap-2 flex-1">
-                          <span className="text-sm font-medium text-gray-600">#{index + 1}</span>
+                          <span className="text-sm font-medium text-gray-600 dark:text-gray-300">#{index + 1}</span>
                           <span className="text-lg">{guessedCountry?.flag || '🏳️'}</span>
-                          <span className="font-medium">{attempt.guess}</span>
+                          <span className="font-medium text-gray-900 dark:text-white">{attempt.guess}</span>
                           {attempt.is_correct && <span className="text-green-600 text-lg">✓</span>}
                         </div>
                         {!attempt.is_correct && (
                           <>
                             <div className="flex items-center gap-2">
-                              <span className="text-sm font-medium">{formatDistance(attempt.distance)}</span>
+                              <span className="text-sm font-medium text-gray-900 dark:text-white">{formatDistance(attempt.distance)}</span>
                               <span className="text-xl">{getDirectionArrow(attempt.direction)}</span>
                             </div>
                             <div className={`px-3 py-1 rounded-full text-white text-sm ${getProximityColor(attempt.proximity)}`}>

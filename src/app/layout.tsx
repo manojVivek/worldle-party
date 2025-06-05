@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Worldle Multiplayer",
+  title: "WorldleParty",
   description: "Guess countries by their shape with friends in real-time!",
 };
 
