@@ -322,7 +322,7 @@ export default function GamePage() {
                       
                       {guess.length > 0 && suggestions.length === 0 && !isSubmitting && (
                         <div className="absolute z-10 w-full bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 rounded-lg mt-1 p-4 text-center text-gray-500 dark:text-gray-400 shadow-lg">
-                          No countries found matching "{guess}"
+                          No countries found matching &quot;{guess}&quot;
                         </div>
                       )}
                     </div>
