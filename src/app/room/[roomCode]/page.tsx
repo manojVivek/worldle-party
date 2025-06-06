@@ -16,6 +16,8 @@ export default function RoomPage() {
   const [error, setError] = useState('')
   const [currentPlayerId, setCurrentPlayerId] = useState<string | null>(null)
   const [isStarting, setIsStarting] = useState(false)
+  const [linkCopied, setLinkCopied] = useState(false)
+  const [codeCopied, setCodeCopied] = useState(false)
 
   useEffect(() => {
     const playerId = localStorage.getItem('playerId')
@@ -90,8 +92,25 @@ export default function RoomPage() {
     }
   }
 
-  const copyRoomCode = () => {
-    navigator.clipboard.writeText(roomCode as string)
+  const copyRoomCode = async () => {
+    try {
+      await navigator.clipboard.writeText(roomCode as string)
+      setCodeCopied(true)
+      setTimeout(() => setCodeCopied(false), 2000)
+    } catch (err) {
+      console.error('Failed to copy room code:', err)
+    }
+  }
+
+  const copyRoomLink = async () => {
+    try {
+      const roomUrl = `${window.location.origin}/join/${roomCode}`
+      await navigator.clipboard.writeText(roomUrl)
+      setLinkCopied(true)
+      setTimeout(() => setLinkCopied(false), 2000)
+    } catch (err) {
+      console.error('Failed to copy room link:', err)
+    }
   }
 
   const currentPlayer = players.find(p => p.id === currentPlayerId)
@@ -138,21 +157,56 @@ export default function RoomPage() {
       <div className="max-w-2xl mx-auto">
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-6">
           <div className="text-center mb-6">
-            <div className="flex items-center justify-center gap-3 mb-2">
+            <div className="flex items-center justify-center gap-3 mb-4">
               <Image src="/worldleparty-icon.svg" alt="WorldleParty" width={40} height={40} />
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">WorldleParty Lobby</h1>
             </div>
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <span className="text-2xl font-mono font-bold text-blue-600 dark:text-blue-400">{room.room_code}</span>
-              <button
-                onClick={copyRoomCode}
-                className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 p-1"
-                title="Copy room code"
-              >
-                📋
-              </button>
+            
+            {/* Primary sharing method - Link */}
+            <div className="bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
+              <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-2">📤 Invite Friends</h3>
+              <p className="text-sm text-blue-700 dark:text-blue-300 mb-3">Share this link for instant room access</p>
+              <div className="flex items-center gap-2 bg-white dark:bg-gray-800 border border-blue-300 dark:border-blue-600 rounded-lg p-3">
+                <code className="flex-1 text-sm text-gray-700 dark:text-gray-300 break-all">
+                  {typeof window !== 'undefined' ? `${window.location.origin}/join/${room.room_code}` : `worldleparty.com/join/${room.room_code}`}
+                </code>
+                <button
+                  onClick={copyRoomLink}
+                  className={`px-3 py-1 rounded text-sm transition-all duration-200 flex items-center gap-1 ${
+                    linkCopied 
+                      ? 'bg-green-600 text-white' 
+                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                  }`}
+                  title={linkCopied ? "Copied!" : "Copy room link"}
+                >
+                  {linkCopied ? '✓ Copied!' : '📋 Copy'}
+                </button>
+              </div>
             </div>
-            <p className="text-gray-600 dark:text-gray-300">Share this code with your friends!</p>
+
+            {/* Secondary sharing method - Code */}
+            <details className="text-left">
+              <summary className="cursor-pointer text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 mb-2">
+                Or share room code manually
+              </summary>
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+                <div className="flex items-center justify-center gap-2">
+                  <span className="text-lg font-mono font-bold text-gray-700 dark:text-gray-300">{room.room_code}</span>
+                  <button
+                    onClick={copyRoomCode}
+                    className={`p-1 transition-all duration-200 ${
+                      codeCopied 
+                        ? 'text-green-600 dark:text-green-400' 
+                        : 'text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                    }`}
+                    title={codeCopied ? "Copied!" : "Copy room code"}
+                  >
+                    {codeCopied ? '✓' : '📋'}
+                  </button>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-1">Friends can enter this code manually</p>
+              </div>
+            </details>
           </div>
 
           <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-6">
