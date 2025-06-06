@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { supabaseClient } from '@/lib/supabase-client'
 import { Room, Player } from '@/types/game.types'
 import { getRandomCountries } from '@/data/countries'
@@ -26,6 +27,7 @@ export default function RoomPage() {
     }
 
     loadRoomData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomCode, router])
 
   const loadRoomData = async () => {
@@ -136,7 +138,10 @@ export default function RoomPage() {
       <div className="max-w-2xl mx-auto">
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-6">
           <div className="text-center mb-6">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">🌍 WorldleParty Lobby</h1>
+            <div className="flex items-center justify-center gap-3 mb-2">
+              <Image src="/worldleparty-icon.svg" alt="WorldleParty" width={40} height={40} />
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">WorldleParty Lobby</h1>
+            </div>
             <div className="flex items-center justify-center gap-2 mb-2">
               <span className="text-2xl font-mono font-bold text-blue-600 dark:text-blue-400">{room.room_code}</span>
               <button

@@ -1,0 +1,34 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="90" fill="#3B82F6" opacity="0.1"/>
+  
+  <!-- Globe -->
+  <circle cx="100" cy="100" r="70" fill="#3B82F6" stroke="#1E40AF" stroke-width="3"/>
+  
+  <!-- Continents stylized -->
+  <path d="M 70 80 Q 85 75 95 85 T 110 80 Q 120 90 115 100 Q 105 105 95 95 Q 85 100 75 95 Q 70 85 70 80" fill="#10B981" opacity="0.8"/>
+  <path d="M 125 70 Q 135 65 140 75 Q 135 85 125 80 Q 120 70 125 70" fill="#10B981" opacity="0.8"/>
+  <path d="M 80 120 Q 90 115 100 120 Q 95 130 85 125 Q 75 125 80 120" fill="#10B981" opacity="0.8"/>
+  
+  <!-- Globe lines -->
+  <ellipse cx="100" cy="100" rx="70" ry="25" fill="none" stroke="#1E40AF" stroke-width="2" opacity="0.3"/>
+  <line x1="30" y1="100" x2="170" y2="100" stroke="#1E40AF" stroke-width="2" opacity="0.3"/>
+  <ellipse cx="100" cy="100" rx="25" ry="70" fill="none" stroke="#1E40AF" stroke-width="2" opacity="0.3"/>
+  
+  <!-- Party confetti -->
+  <rect x="45" y="35" width="8" height="15" rx="2" fill="#F59E0B" transform="rotate(25 49 42)"/>
+  <rect x="145" y="45" width="8" height="15" rx="2" fill="#EF4444" transform="rotate(-30 149 52)"/>
+  <rect x="135" y="135" width="8" height="15" rx="2" fill="#10B981" transform="rotate(45 139 142)"/>
+  <rect x="55" y="145" width="8" height="15" rx="2" fill="#8B5CF6" transform="rotate(-20 59 152)"/>
+  
+  <!-- Party hat on top -->
+  <path d="M 85 25 L 100 5 L 115 25 Q 100 30 85 25" fill="#EF4444" stroke="#DC2626" stroke-width="2"/>
+  <circle cx="100" cy="5" r="4" fill="#FCD34D"/>
+  
+  <!-- Smile on globe -->
+  <path d="M 70 110 Q 100 125 130 110" fill="none" stroke="#1E40AF" stroke-width="3" stroke-linecap="round"/>
+  
+  <!-- Party stars -->
+  <path d="M 35 55 L 37 60 L 42 60 L 38 63 L 40 68 L 35 65 L 30 68 L 32 63 L 28 60 L 33 60 Z" fill="#FCD34D"/>
+  <path d="M 165 65 L 167 70 L 172 70 L 168 73 L 170 78 L 165 75 L 160 78 L 162 73 L 158 70 L 163 70 Z" fill="#FCD34D"/>
+</svg>

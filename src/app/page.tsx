@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { supabaseClient } from '@/lib/supabase-client'
 import NaturalEarthPreloader from '@/components/NaturalEarthPreloader'
 
@@ -61,7 +62,10 @@ export default function Home() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">🌍 WorldleParty</h1>
+          <div className="flex justify-center mb-4">
+            <Image src="/worldleparty-logo.svg" alt="WorldleParty Logo" width={96} height={96} />
+          </div>
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">WorldleParty</h1>
           <p className="text-lg text-gray-600 dark:text-gray-300">Multiplayer Country Guessing Game</p>
         </div>
 

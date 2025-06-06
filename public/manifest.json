@@ -1,0 +1,22 @@
+{
+  "name": "WorldleParty",
+  "short_name": "WorldleParty",
+  "description": "Multiplayer country guessing game",
+  "icons": [
+    {
+      "src": "/worldleparty-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/worldleparty-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "theme_color": "#3B82F6",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/"
+}

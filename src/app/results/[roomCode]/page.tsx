@@ -23,6 +23,7 @@ export default function ResultsPage() {
     }
 
     loadResults()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomCode, router])
 
   const loadResults = async () => {

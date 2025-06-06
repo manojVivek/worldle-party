@@ -15,6 +15,14 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "WorldleParty",
   description: "Guess countries by their shape with friends in real-time!",
+  icons: {
+    icon: [
+      { url: '/worldleparty-icon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', sizes: 'any' }
+    ],
+    apple: '/worldleparty-icon.svg',
+  },
+  manifest: '/manifest.json',
 };
 
 export default function RootLayout({

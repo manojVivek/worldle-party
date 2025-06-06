@@ -40,6 +40,7 @@ export default function GamePage() {
     }
 
     loadGameData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomCode, router])
 
   useEffect(() => {
@@ -298,7 +299,7 @@ export default function GamePage() {
                           {suggestions.map((country, index) => (
                             <button
                               key={country.code}
-                              ref={index === selectedSuggestionIndex ? (el) => el?.scrollIntoView({ block: 'nearest' }) : undefined}
+                              ref={index === selectedSuggestionIndex ? (el: HTMLButtonElement | null) => el?.scrollIntoView({ block: 'nearest' }) : undefined}
                               onClick={() => handleSubmitGuess(country.name)}
                               className={`w-full text-left px-4 py-3 border-b border-gray-100 dark:border-gray-700 last:border-b-0 flex items-center gap-3 transition-colors ${
                                 index === selectedSuggestionIndex 
