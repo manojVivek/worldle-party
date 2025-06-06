@@ -33,7 +33,7 @@ export default function JoinRoomPage() {
       } else {
         setRoomExists(false)
       }
-    } catch (err) {
+    } catch {
       setRoomExists(false)
     }
   }
@@ -76,7 +76,7 @@ export default function JoinRoomPage() {
           <div className="text-red-500 text-6xl mb-4">❌</div>
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Room Not Found</h2>
           <p className="text-gray-600 dark:text-gray-300 mb-4">
-            Room <span className="font-mono font-bold">{roomCode}</span> doesn't exist or has already started.
+            Room <span className="font-mono font-bold">{roomCode}</span> doesn&apos;t exist or has already started.
           </p>
           <button
             onClick={() => router.push('/')}
@@ -97,7 +97,7 @@ export default function JoinRoomPage() {
             <Image src="/worldleparty-logo.svg" alt="WorldleParty Logo" width={96} height={96} />
           </div>
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">Join Room</h1>
-          <p className="text-lg text-gray-600 dark:text-gray-300">You've been invited to play!</p>
+          <p className="text-lg text-gray-600 dark:text-gray-300">You&apos;ve been invited to play!</p>
         </div>
 
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 space-y-6">

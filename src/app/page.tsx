@@ -8,6 +8,7 @@ import NaturalEarthPreloader from '@/components/NaturalEarthPreloader'
 
 export default function Home() {
   const [hostName, setHostName] = useState('')
+  const [roomName, setRoomName] = useState('')
   const [joinCode, setJoinCode] = useState('')
   const [playerName, setPlayerName] = useState('')
   const [isCreating, setIsCreating] = useState(false)
@@ -23,7 +24,7 @@ export default function Home() {
     setError('')
 
     try {
-      const room = await supabaseClient.createRoom(hostName.trim())
+      const room = await supabaseClient.createRoom(hostName.trim(), roomName.trim() || undefined)
       const { player } = await supabaseClient.joinRoom(room.room_code, hostName.trim())
       
       localStorage.setItem('playerId', player.id)
@@ -86,6 +87,16 @@ export default function Home() {
                 onChange={(e) => setHostName(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 maxLength={50}
+                disabled={isCreating}
+                required
+              />
+              <input
+                type="text"
+                placeholder="Room name (optional)"
+                value={roomName}
+                onChange={(e) => setRoomName(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                maxLength={100}
                 disabled={isCreating}
               />
               <button

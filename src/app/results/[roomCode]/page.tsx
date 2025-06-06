@@ -146,7 +146,7 @@ export default function ResultsPage() {
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-gray-900 mb-2">🎉 Game Complete!</h1>
-            <p className="text-lg text-gray-600">Room: {room.room_code}</p>
+            <p className="text-lg text-gray-600">{room.name} • {room.room_code}</p>
           </div>
 
           {winner && (

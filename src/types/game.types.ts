@@ -23,6 +23,7 @@ export interface Room {
   id: string
   room_code: string
   host_name: string
+  name: string
   status: 'waiting' | 'playing' | 'finished'
   current_round: number
   total_rounds: number
@@ -84,5 +85,5 @@ export interface RoundWithGuesses extends GameRound {
 }
 
 export type GameStatus = 'waiting' | 'playing' | 'finished'
-export type RoomCreationData = Pick<Room, 'host_name'>
+export type RoomCreationData = Pick<Room, 'host_name' | 'name'>
 export type PlayerJoinData = Pick<Player, 'name'>

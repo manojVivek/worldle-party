@@ -11,7 +11,7 @@ import { generateRoomCode, getWorldleSettings } from './game'
 export class SupabaseClient {
   public supabase = supabase
   
-  async createRoom(hostName: string): Promise<Room> {
+  async createRoom(hostName: string, roomName?: string): Promise<Room> {
     const roomCode = generateRoomCode()
     
     const { data, error } = await supabase
@@ -19,6 +19,7 @@ export class SupabaseClient {
       .insert({
         room_code: roomCode,
         host_name: hostName,
+        name: roomName || `${hostName}'s Room`,
         status: 'waiting'
       })
       .select()
@@ -264,6 +265,24 @@ export class SupabaseClient {
         schema: 'public',
         table: 'players',
         filter: `room_id=eq.${roomId}`
+      }, callback)
+      .subscribe()
+  }
+
+  subscribeToRoomUpdates(roomId: string, callback: (payload: unknown) => void) {
+    return supabase
+      .channel(`room-updates-${roomId}`)
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'players',
+        filter: `room_id=eq.${roomId}`
+      }, callback)
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'rooms',
+        filter: `id=eq.${roomId}`
       }, callback)
       .subscribe()
   }

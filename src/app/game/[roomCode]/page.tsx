@@ -255,7 +255,7 @@ export default function GamePage() {
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                 Round {room.current_round} of {room.total_rounds}
               </h1>
-              <p className="text-gray-600 dark:text-gray-300">Room: {room.room_code}</p>
+              <p className="text-gray-600 dark:text-gray-300">{room.name} • {room.room_code}</p>
             </div>
             <div className="text-right">
               <div className="text-lg font-semibold text-blue-600 dark:text-blue-400">

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { supabaseClient } from '@/lib/supabase-client'
@@ -18,6 +18,49 @@ export default function RoomPage() {
   const [isStarting, setIsStarting] = useState(false)
   const [linkCopied, setLinkCopied] = useState(false)
   const [codeCopied, setCodeCopied] = useState(false)
+  const [subscriptions, setSubscriptions] = useState<{ unsubscribe: () => void }[]>([])
+  const [roomId, setRoomId] = useState<string | null>(null)
+  const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null)
+
+  const fetchRoomData = useCallback(async () => {
+    try {
+      const { data: rooms } = await supabaseClient.supabase
+        .from('rooms')
+        .select('*')
+        .eq('room_code', roomCode)
+        .single()
+
+      if (!rooms) {
+        setError('Room not found')
+        return null
+      }
+
+      const { data: playersData } = await supabaseClient.supabase
+        .from('players')
+        .select('*')
+        .eq('room_id', rooms.id)
+        .order('joined_at')
+
+      setRoom(rooms)
+      setPlayers(playersData || [])
+      setRoomId(rooms.id)
+      return rooms
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load room')
+      return null
+    }
+  }, [roomCode])
+
+  const loadRoomData = async () => {
+    try {
+      setLoading(true)
+      await fetchRoomData()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load room')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
     const playerId = localStorage.getItem('playerId')
@@ -32,47 +75,32 @@ export default function RoomPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomCode, router])
 
-  const loadRoomData = async () => {
-    try {
-      setLoading(true)
-      const { data: rooms } = await supabaseClient.supabase
-        .from('rooms')
-        .select('*')
-        .eq('room_code', roomCode)
-        .single()
-
-      if (!rooms) {
-        setError('Room not found')
-        return
-      }
-
-      const { data: playersData } = await supabaseClient.supabase
-        .from('players')
-        .select('*')
-        .eq('room_id', rooms.id)
-        .order('joined_at')
-
-      setRoom(rooms)
-      setPlayers(playersData || [])
-
-      const roomSubscription = supabaseClient.subscribeToRoom(rooms.id, () => {
-        loadRoomData()
+  useEffect(() => {
+    if (roomId && subscriptions.length === 0) {
+      // Set up combined real-time subscription
+      const subscription = supabaseClient.subscribeToRoomUpdates(roomId, () => {
+        fetchRoomData()
       })
 
-      const playersSubscription = supabaseClient.subscribeToPlayers(rooms.id, () => {
-        loadRoomData()
-      })
+      setSubscriptions([subscription])
 
-      return () => {
-        roomSubscription.unsubscribe()
-        playersSubscription.unsubscribe()
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load room')
-    } finally {
-      setLoading(false)
+      // Set up polling as fallback (every 5 seconds)
+      const interval = setInterval(() => {
+        fetchRoomData()
+      }, 5000)
+      
+      setPollingInterval(interval)
     }
-  }
+  }, [roomId, subscriptions.length, fetchRoomData])
+
+  useEffect(() => {
+    return () => {
+      subscriptions.forEach(sub => sub.unsubscribe())
+      if (pollingInterval) {
+        clearInterval(pollingInterval)
+      }
+    }
+  }, [subscriptions, pollingInterval])
 
   const handleStartGame = async () => {
     if (!room || !currentPlayerId) return
@@ -159,7 +187,10 @@ export default function RoomPage() {
           <div className="text-center mb-6">
             <div className="flex items-center justify-center gap-3 mb-4">
               <Image src="/worldleparty-icon.svg" alt="WorldleParty" width={40} height={40} />
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">WorldleParty Lobby</h1>
+              <div className="text-center">
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{room.name}</h1>
+                <p className="text-sm text-gray-600 dark:text-gray-400">WorldleParty Room</p>
+              </div>
             </div>
             
             {/* Primary sharing method - Link */}
