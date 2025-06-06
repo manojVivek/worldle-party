@@ -4,23 +4,191 @@ import { useEffect, useState, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { supabaseClient } from '@/lib/supabase-client'
-import { Room, Player } from '@/types/game.types'
-import { getRandomCountries } from '@/data/countries'
+import { Room, Player, Round, RoundCreationData } from '@/types/game.types'
+
+interface RoundCardProps {
+  round: Round
+  isHost: boolean
+  onStartRound: (roundId: string) => void
+  onUpdateRound: (roundId: string, updates: Partial<RoundCreationData>) => void
+}
+
+function RoundCard({ round, isHost, onStartRound, onUpdateRound }: RoundCardProps) {
+  const [isEditing, setIsEditing] = useState(false)
+  const [editForm, setEditForm] = useState({
+    name: round.name || '',
+    games_per_round: round.games_per_round,
+    time_limit_seconds: round.time_limit_seconds,
+    max_attempts_per_game: round.max_attempts_per_game
+  })
+
+  const handleSave = async () => {
+    await onUpdateRound(round.id, editForm)
+    await onStartRound(round.id)
+    setIsEditing(false)
+  }
+
+  const handleCancel = () => {
+    setEditForm({
+      name: round.name || '',
+      games_per_round: round.games_per_round,
+      time_limit_seconds: round.time_limit_seconds,
+      max_attempts_per_game: round.max_attempts_per_game
+    })
+    setIsEditing(false)
+  }
+
+  if (round.status === 'waiting' && isHost) {
+    return (
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border-2 border-blue-200 dark:border-blue-800">
+        {isEditing ? (
+          <div className="space-y-3">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Round Name
+              </label>
+              <input
+                type="text"
+                value={editForm.name}
+                onChange={(e) => setEditForm({...editForm, name: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Games
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  max="20"
+                  value={editForm.games_per_round}
+                  onChange={(e) => setEditForm({...editForm, games_per_round: parseInt(e.target.value)})}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Attempts
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  max="10"
+                  value={editForm.max_attempts_per_game}
+                  onChange={(e) => setEditForm({...editForm, max_attempts_per_game: parseInt(e.target.value)})}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Time (s)
+                </label>
+                <input
+                  type="number"
+                  min="30"
+                  max="300"
+                  value={editForm.time_limit_seconds}
+                  onChange={(e) => setEditForm({...editForm, time_limit_seconds: parseInt(e.target.value)})}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={handleSave}
+                className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors"
+              >
+                Start Round
+              </button>
+              <button
+                onClick={handleCancel}
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              >
+                Reset
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div>
+            <div className="flex justify-between items-center mb-2">
+              <h4 className="font-medium text-gray-900 dark:text-white">{round.name}</h4>
+              <span className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300 px-2 py-1 rounded-full text-xs">
+                Ready to start
+              </span>
+            </div>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+              {round.games_per_round} games • {round.max_attempts_per_game} attempts • {round.time_limit_seconds}s timer
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => onStartRound(round.id)}
+                className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors"
+              >
+                Start Round
+              </button>
+              <button
+                onClick={() => setIsEditing(true)}
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              >
+                Edit
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  // For non-waiting rounds or non-host users
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border">
+      <div className="flex justify-between items-center">
+        <div>
+          <h4 className="font-medium text-gray-900 dark:text-white">{round.name}</h4>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            {round.games_per_round} games • {round.max_attempts_per_game} attempts • {round.time_limit_seconds}s timer
+          </p>
+        </div>
+        <span className={`px-2 py-1 rounded-full text-xs ${
+          round.status === 'waiting' 
+            ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
+            : round.status === 'active'
+            ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400'
+            : 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400'
+        }`}>
+          {round.status}
+        </span>
+      </div>
+    </div>
+  )
+}
 
 export default function RoomPage() {
   const { roomCode } = useParams()
   const router = useRouter()
   const [room, setRoom] = useState<Room | null>(null)
   const [players, setPlayers] = useState<Player[]>([])
+  const [rounds, setRounds] = useState<Round[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [currentPlayerId, setCurrentPlayerId] = useState<string | null>(null)
-  const [isStarting, setIsStarting] = useState(false)
+  const [isCreatingRound, setIsCreatingRound] = useState(false)
+  const [showRoundForm, setShowRoundForm] = useState(false)
   const [linkCopied, setLinkCopied] = useState(false)
   const [codeCopied, setCodeCopied] = useState(false)
   const [subscriptions, setSubscriptions] = useState<{ unsubscribe: () => void }[]>([])
   const [roomId, setRoomId] = useState<string | null>(null)
   const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null)
+  
+  // Round creation form state
+  const [roundForm, setRoundForm] = useState<RoundCreationData>({
+    name: '',
+    games_per_round: 10,
+    time_limit_seconds: 60,
+    max_attempts_per_game: 5
+  })
 
   const fetchRoomData = useCallback(async () => {
     try {
@@ -40,6 +208,14 @@ export default function RoomPage() {
         .select('*')
         .eq('room_id', rooms.id)
         .order('joined_at')
+
+      const { data: roundsData } = await supabaseClient.supabase
+        .from('rounds')
+        .select('*')
+        .eq('room_id', rooms.id)
+        .order('round_number')
+
+      setRounds(roundsData || [])
 
       setRoom(rooms)
       setPlayers(playersData || [])
@@ -67,7 +243,8 @@ export default function RoomPage() {
     setCurrentPlayerId(playerId)
 
     if (!playerId) {
-      router.push('/')
+      // If no player ID, redirect to join page for this room
+      router.push(`/join/${roomCode}`)
       return
     }
 
@@ -102,21 +279,55 @@ export default function RoomPage() {
     }
   }, [subscriptions, pollingInterval])
 
-  const handleStartGame = async () => {
+  const handleCreateRound = async () => {
     if (!room || !currentPlayerId) return
 
-    setIsStarting(true)
+    setIsCreatingRound(true)
     try {
-      await supabaseClient.startGame(room.id)
+      const roundData: RoundCreationData = {
+        ...roundForm,
+        name: roundForm.name || `Round ${rounds.length + 1}`
+      }
       
-      const countries = getRandomCountries(room.total_rounds)
-      await supabaseClient.createGameRound(room.id, 1, countries[0])
+      await supabaseClient.createRound(room.id, roundData)
+      await fetchRoomData()
       
+      // Reset form
+      setRoundForm({
+        name: '',
+        games_per_round: 10,
+        time_limit_seconds: 60,
+        max_attempts_per_game: 5
+      })
+      setShowRoundForm(false)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create round')
+    } finally {
+      setIsCreatingRound(false)
+    }
+  }
+
+  const handleStartRound = async (roundId: string) => {
+    if (!room || !currentPlayerId) return
+
+    try {
+      await supabaseClient.startRound(roundId)
       router.push(`/game/${room.room_code}`)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to start game')
-    } finally {
-      setIsStarting(false)
+      setError(err instanceof Error ? err.message : 'Failed to start round')
+    }
+  }
+
+  const handleUpdateRound = async (roundId: string, updates: Partial<RoundCreationData>) => {
+    try {
+      await supabaseClient.supabase
+        .from('rounds')
+        .update(updates)
+        .eq('id', roundId)
+      
+      await fetchRoomData()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update round')
     }
   }
 
@@ -175,7 +386,7 @@ export default function RoomPage() {
 
   if (!room) return null
 
-  if (room.status === 'playing') {
+  if (room.status === 'playing' && room.active_round_id) {
     router.push(`/game/${room.room_code}`)
     return null
   }
@@ -241,17 +452,125 @@ export default function RoomPage() {
           </div>
 
           <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-6">
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Game Settings</h3>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <span className="text-gray-600 dark:text-gray-300">Total Rounds:</span>
-                <span className="ml-2 font-medium text-gray-900 dark:text-white">{room.total_rounds}</span>
-              </div>
-              <div>
-                <span className="text-gray-600 dark:text-gray-300">Host:</span>
-                <span className="ml-2 font-medium text-gray-900 dark:text-white">{room.host_name}</span>
-              </div>
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="font-semibold text-gray-900 dark:text-white">Round Settings</h3>
+              {isHost && (
+                <>
+                  {rounds.length === 0 && (
+                    <button
+                      onClick={() => setShowRoundForm(!showRoundForm)}
+                      className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                    >
+                      Create First Round
+                    </button>
+                  )}
+                  {rounds.length > 0 && rounds[0].status !== 'waiting' && (
+                    <button
+                      onClick={() => setShowRoundForm(!showRoundForm)}
+                      className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors"
+                    >
+                      + New Round
+                    </button>
+                  )}
+                </>
+              )}
             </div>
+            
+            {showRoundForm && (
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 mb-4 border-2 border-blue-200 dark:border-blue-800">
+                <h4 className="font-medium text-gray-900 dark:text-white mb-3">Create New Round</h4>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Round Name (optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={roundForm.name}
+                      onChange={(e) => setRoundForm({...roundForm, name: e.target.value})}
+                      placeholder={`Round ${rounds.length + 1}`}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Games per Round
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="20"
+                        value={roundForm.games_per_round}
+                        onChange={(e) => setRoundForm({...roundForm, games_per_round: parseInt(e.target.value)})}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Max Attempts
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="10"
+                        value={roundForm.max_attempts_per_game}
+                        onChange={(e) => setRoundForm({...roundForm, max_attempts_per_game: parseInt(e.target.value)})}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Time Limit (seconds)
+                    </label>
+                    <input
+                      type="number"
+                      min="30"
+                      max="300"
+                      value={roundForm.time_limit_seconds}
+                      onChange={(e) => setRoundForm({...roundForm, time_limit_seconds: parseInt(e.target.value)})}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleCreateRound}
+                      disabled={isCreatingRound}
+                      className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+                    >
+                      {isCreatingRound ? 'Creating...' : 'Create Round'}
+                    </button>
+                    <button
+                      onClick={() => setShowRoundForm(false)}
+                      className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {rounds.length > 0 ? (
+              <div className="space-y-3">
+                {rounds.map((round) => (
+                  <RoundCard 
+                    key={round.id} 
+                    round={round} 
+                    isHost={isHost} 
+                    onStartRound={handleStartRound}
+                    onUpdateRound={handleUpdateRound}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                  No rounds created yet. {isHost ? 'Click "Create First Round" to get started!' : 'Waiting for host to create a round...'}
+                </p>
+              </div>
+            )}
           </div>
 
           <div className="mb-6">
@@ -286,39 +605,6 @@ export default function RoomPage() {
             </div>
           </div>
 
-          {isHost && (
-            <div className="border-t pt-6">
-              <button
-                onClick={handleStartGame}
-                disabled={players.length < 1 || isStarting}
-                className="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
-              >
-                {isStarting && (
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                )}
-                {isStarting ? 'Starting Game...' : 'Start Game'}
-              </button>
-              <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-2">
-                Only the host can start the game
-              </p>
-            </div>
-          )}
-
-          {!isHost && (
-            <div className="border-t dark:border-gray-600 pt-6 text-center">
-              <p className="text-gray-600 dark:text-gray-300">Waiting for host to start the game...</p>
-              <div className="flex justify-center mt-3">
-                <div className="animate-pulse flex space-x-1">
-                  <div className="h-2 w-2 bg-blue-600 rounded-full"></div>
-                  <div className="h-2 w-2 bg-blue-600 rounded-full animation-delay-200"></div>
-                  <div className="h-2 w-2 bg-blue-600 rounded-full animation-delay-400"></div>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
 
         <div className="text-center">

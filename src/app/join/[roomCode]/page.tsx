@@ -12,24 +12,50 @@ export default function JoinRoomPage() {
   const [isJoining, setIsJoining] = useState(false)
   const [error, setError] = useState('')
   const [roomExists, setRoomExists] = useState<boolean | null>(null)
-  const [roomInfo, setRoomInfo] = useState<{ host_name: string; total_rounds: number } | null>(null)
+  const [roomInfo, setRoomInfo] = useState<{ host_name: string; name: string } | null>(null)
 
   useEffect(() => {
-    checkRoomExists()
+    checkExistingSessionFirst()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomCode])
+
+  const checkExistingSessionFirst = async () => {
+    // First check if there's already a player session for this room
+    const existingPlayerId = localStorage.getItem('playerId')
+    if (existingPlayerId) {
+      try {
+        const { data: existingPlayer } = await supabaseClient.supabase
+          .from('players')
+          .select('*, room:rooms(*)')
+          .eq('id', existingPlayerId)
+          .single()
+        
+        if (existingPlayer && existingPlayer.room?.room_code === roomCode) {
+          // Player already exists in this room, redirect directly
+          router.push(`/room/${roomCode}`)
+          return
+        }
+      } catch (error) {
+        // Player not found or error, continue with normal flow
+        console.log('No existing session found, proceeding with join flow')
+      }
+    }
+    
+    // No existing session, check if room exists
+    checkRoomExists()
+  }
 
   const checkRoomExists = async () => {
     try {
       const { data: room } = await supabaseClient.supabase
         .from('rooms')
-        .select('host_name, total_rounds, status')
+        .select('host_name, name, status')
         .eq('room_code', roomCode)
         .single()
 
       if (room && room.status === 'waiting') {
         setRoomExists(true)
-        setRoomInfo({ host_name: room.host_name, total_rounds: room.total_rounds })
+        setRoomInfo({ host_name: room.host_name, name: room.name })
       } else {
         setRoomExists(false)
       }
@@ -109,10 +135,10 @@ export default function JoinRoomPage() {
                   <span className="font-medium">Room Code:</span> <span className="font-mono font-bold">{roomCode}</span>
                 </p>
                 <p className="text-blue-800 dark:text-blue-200">
-                  <span className="font-medium">Host:</span> {roomInfo.host_name}
+                  <span className="font-medium">Room:</span> {roomInfo.name}
                 </p>
                 <p className="text-blue-800 dark:text-blue-200">
-                  <span className="font-medium">Rounds:</span> {roomInfo.total_rounds}
+                  <span className="font-medium">Host:</span> {roomInfo.host_name}
                 </p>
               </div>
             </div>

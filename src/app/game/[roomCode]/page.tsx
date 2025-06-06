@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { supabaseClient } from '@/lib/supabase-client'
-import { Room, Player, GameRound, Country, PlayerGuess } from '@/types/game.types'
+import { Room, Player, Round, Game, Country, PlayerGuess } from '@/types/game.types'
 import { getRandomCountries, getCountryByName, searchCountries, highlightSearchTerm } from '@/data/countries'
 import { evaluateGuess, calculateWorldleScore, getDirectionArrow, formatDistance, getProximityColor, getWorldleSettings } from '@/lib/game'
 import CountryShape from '@/components/CountryShape'
@@ -13,7 +13,8 @@ export default function GamePage() {
   const router = useRouter()
   const [room, setRoom] = useState<Room | null>(null)
   const [players, setPlayers] = useState<Player[]>([])
-  const [currentRound, setCurrentRound] = useState<GameRound | null>(null)
+  const [activeRound, setActiveRound] = useState<Round | null>(null)
+  const [currentGame, setCurrentGame] = useState<Game | null>(null)
   const [currentCountry, setCurrentCountry] = useState<Country | null>(null)
   const [guess, setGuess] = useState('')
   const [suggestions, setSuggestions] = useState<Country[]>([])
@@ -22,7 +23,7 @@ export default function GamePage() {
   const [loading, setLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isNextRoundLoading, setIsNextRoundLoading] = useState(false)
-  const [roundStatus, setRoundStatus] = useState<{ completed: boolean; attempts: number; won: boolean }>({ completed: false, attempts: 0, won: false })
+  const [gameStatus, setGameStatus] = useState<{ completed: boolean; attempts: number; won: boolean }>({ completed: false, attempts: 0, won: false })
   const [allPlayersStatus, setAllPlayersStatus] = useState<Record<string, boolean>>({})
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1)
   const [showDropdown, setShowDropdown] = useState(false)
@@ -35,7 +36,8 @@ export default function GamePage() {
     setCurrentPlayerId(playerId)
 
     if (!playerId) {
-      router.push('/')
+      // If no player ID, redirect to join page for this room
+      router.push(`/join/${roomCode}`)
       return
     }
 
@@ -76,28 +78,40 @@ export default function GamePage() {
         .eq('room_id', rooms.id)
         .order('total_score', { ascending: false })
 
-      const round = await supabaseClient.getCurrentRound(rooms.id)
+      // Get active round
+      const round = await supabaseClient.getActiveRound(rooms.id)
       
       if (round) {
-        const country = getCountryByName(round.country_name)
-        setCurrentCountry(country || null)
-        setCurrentRound(round)
+        setActiveRound(round)
         
-        if (currentPlayerId) {
-          const attempts = await supabaseClient.getPlayerAttempts(round.id, currentPlayerId)
-          setPlayerAttempts(attempts)
+        // Get current game
+        const game = await supabaseClient.getCurrentGame(round.id)
+        
+        if (game) {
+          const country = getCountryByName(game.country_name)
+          setCurrentCountry(country || null)
+          setCurrentGame(game)
           
-          const status = await supabaseClient.hasPlayerCompletedRound(round.id, currentPlayerId)
-          setRoundStatus(status)
+          if (currentPlayerId) {
+            const attempts = await supabaseClient.getPlayerAttempts(game.id, currentPlayerId)
+            setPlayerAttempts(attempts)
+            
+            const status = await supabaseClient.hasPlayerCompletedGame(game.id, currentPlayerId)
+            setGameStatus(status)
 
-          // Check status for all players
-          const playersStatusMap: Record<string, boolean> = {}
-          for (const player of playersData || []) {
-            const playerStatus = await supabaseClient.hasPlayerCompletedRound(round.id, player.id)
-            playersStatusMap[player.id] = playerStatus.completed
+            // Check status for all players
+            const playersStatusMap: Record<string, boolean> = {}
+            for (const player of playersData || []) {
+              const playerStatus = await supabaseClient.hasPlayerCompletedGame(game.id, player.id)
+              playersStatusMap[player.id] = playerStatus.completed
+            }
+            setAllPlayersStatus(playersStatusMap)
           }
-          setAllPlayersStatus(playersStatusMap)
         }
+      } else {
+        // No active round, redirect back to room
+        router.push(`/room/${rooms.room_code}`)
+        return
       }
 
       setRoom(rooms)
@@ -108,8 +122,8 @@ export default function GamePage() {
         router.push(`/results/${rooms.room_code}`)
       }
       
-      // Auto-focus input when round loads and not completed
-      if (round && !loading && inputRef.current && !roundStatus.completed) {
+      // Auto-focus input when game loads and not completed
+      if (currentGame && !loading && inputRef.current && !gameStatus.completed) {
         setTimeout(() => inputRef.current?.focus(), 200)
       }
 
@@ -120,7 +134,7 @@ export default function GamePage() {
   }
 
   const handleSubmitGuess = async (selectedCountry: string) => {
-    if (!currentRound || !currentCountry || !currentPlayerId || roundStatus.completed || isSubmitting) return
+    if (!currentGame || !currentCountry || !currentPlayerId || gameStatus.completed || isSubmitting) return
 
     const guessedCountry = getCountryByName(selectedCountry)
     if (!guessedCountry) return
@@ -133,7 +147,7 @@ export default function GamePage() {
       const score = calculateWorldleScore(attemptNumber, guessResult.isCorrect)
 
       await supabaseClient.submitGuess(
-        currentRound.id,
+        currentGame.id,
         currentPlayerId,
         selectedCountry,
         guessResult.isCorrect,
@@ -152,7 +166,7 @@ export default function GamePage() {
       
       // Focus input for next attempt (with a small delay to ensure the UI has updated)
       setTimeout(() => {
-        if (inputRef.current && !roundStatus.completed) {
+        if (inputRef.current && !gameStatus.completed) {
           inputRef.current.focus()
         }
       }, 100)
@@ -192,25 +206,48 @@ export default function GamePage() {
     }
   }
 
-  const handleNextRound = async () => {
-    if (!room || !currentRound || isNextRoundLoading) return
+  const handleNextGame = async () => {
+    if (!activeRound || !currentGame || isNextRoundLoading) return
 
     setIsNextRoundLoading(true)
     try {
-      const nextRoundNumber = room.current_round + 1
+      const nextGame = await supabaseClient.nextGame(activeRound.id)
       
-      if (nextRoundNumber <= room.total_rounds) {
-        const countries = getRandomCountries(1)
-        await supabaseClient.createGameRound(room.id, nextRoundNumber, countries[0])
-        await supabaseClient.nextRound(room.id)
-        
+      if (nextGame) {
+        // There's another game in this round
         await loadGameData()
       } else {
-        await supabaseClient.nextRound(room.id)
-        router.push(`/results/${room.room_code}`)
+        // Round is complete, go to round results
+        await supabaseClient.completeRound(activeRound.id)
+        router.push(`/results/${room?.room_code}`)
       }
     } catch (err) {
-      console.error('Failed to start next round:', err)
+      console.error('Failed to proceed to next game:', err)
+    } finally {
+      setIsNextRoundLoading(false)
+    }
+  }
+
+  const startNextGame = async () => {
+    if (!activeRound || isNextRoundLoading) return
+
+    setIsNextRoundLoading(true)
+    try {
+      const nextGameNumber = (currentGame?.game_number || 0) + 1
+      
+      if (nextGameNumber <= activeRound.games_per_round) {
+        // Create and start next game
+        const countries = getRandomCountries(1)
+        await supabaseClient.createGame(activeRound.id, nextGameNumber, countries[0])
+        await supabaseClient.nextGame(activeRound.id)
+        await loadGameData()
+      } else {
+        // Round is complete, finish it and go to results
+        await supabaseClient.completeRound(activeRound.id)
+        router.push(`/results/${room?.room_code}`)
+      }
+    } catch (err) {
+      console.error('Failed to start next game:', err)
     } finally {
       setIsNextRoundLoading(false)
     }
@@ -230,7 +267,7 @@ export default function GamePage() {
     )
   }
 
-  if (!room || !currentRound || !currentCountry) {
+  if (!room || !activeRound || !currentGame || !currentCountry) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">
@@ -253,16 +290,16 @@ export default function GamePage() {
           <div className="flex justify-between items-center mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Round {room.current_round} of {room.total_rounds}
+                {activeRound.name} - Game {currentGame.game_number} of {activeRound.games_per_round}
               </h1>
               <p className="text-gray-600 dark:text-gray-300">{room.name} • {room.room_code}</p>
             </div>
             <div className="text-right">
               <div className="text-lg font-semibold text-blue-600 dark:text-blue-400">
-                {roundStatus.attempts}/{maxAttempts} attempts
+                {gameStatus.attempts}/{currentGame.max_attempts} attempts
               </div>
               <p className="text-sm text-gray-600 dark:text-gray-300">
-                {roundStatus.completed ? (roundStatus.won ? 'Completed!' : 'Failed') : 'In progress'}
+                {gameStatus.completed ? (gameStatus.won ? 'Completed!' : 'Failed') : 'In progress'}
               </p>
             </div>
           </div>
@@ -277,7 +314,7 @@ export default function GamePage() {
                   What country is this?
                 </h2>
                 
-                {!roundStatus.completed && (
+                {!gameStatus.completed && (
                   <div className="space-y-4">
                     <div className="relative max-w-md mx-auto">
                       <input
@@ -337,17 +374,17 @@ export default function GamePage() {
                   </div>
                 )}
 
-                {roundStatus.completed && (
-                  <div className={`${roundStatus.won ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'} border rounded-lg p-4`}>
-                    <p className={`${roundStatus.won ? 'text-green-800' : 'text-red-800'} font-medium`}>
-                      {roundStatus.won ? '🎉 Correct!' : '❌ Game Over'}
+                {gameStatus.completed && (
+                  <div className={`${gameStatus.won ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'} border rounded-lg p-4`}>
+                    <p className={`${gameStatus.won ? 'text-green-800' : 'text-red-800'} font-medium`}>
+                      {gameStatus.won ? '🎉 Correct!' : '❌ Game Over'}
                     </p>
-                    <p className={`${roundStatus.won ? 'text-green-700' : 'text-red-700'}`}>
+                    <p className={`${gameStatus.won ? 'text-green-700' : 'text-red-700'}`}>
                       The answer was: <strong>{currentCountry.name}</strong>
                     </p>
-                    {roundStatus.won && (
+                    {gameStatus.won && (
                       <p className="text-green-600 text-sm mt-1">
-                        Solved in {roundStatus.attempts} attempt{roundStatus.attempts !== 1 ? 's' : ''}!
+                        Solved in {gameStatus.attempts} attempt{gameStatus.attempts !== 1 ? 's' : ''}!
                       </p>
                     )}
                   </div>
@@ -409,21 +446,21 @@ export default function GamePage() {
               {allPlayersCompleted && isHost && (
                 <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                   <h3 className="font-semibold text-green-800 mb-2">All Players Completed</h3>
-                  <p className="text-green-700 mb-4">Everyone has finished this round!</p>
+                  <p className="text-green-700 mb-4">Everyone has finished this game!</p>
                   <button
-                    onClick={handleNextRound}
+                    onClick={startNextGame}
                     disabled={isNextRoundLoading}
                     className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                   >
                     {isNextRoundLoading && (
                       <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 714 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
                     )}
                     {isNextRoundLoading 
                       ? 'Loading...' 
-                      : (room.current_round < room.total_rounds ? 'Next Round' : 'Finish Game')
+                      : (currentGame && currentGame.game_number < activeRound.games_per_round ? 'Next Game' : 'Finish Round')
                     }
                   </button>
                 </div>
@@ -431,7 +468,7 @@ export default function GamePage() {
 
               {allPlayersCompleted && !isHost && (
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <p className="text-blue-800">Waiting for host to start next round...</p>
+                  <p className="text-blue-800">Waiting for host to start next game...</p>
                 </div>
               )}
             </div>
@@ -484,7 +521,8 @@ export default function GamePage() {
                 <h3 className="font-semibold text-gray-900 mb-2">How to Play</h3>
                 <div className="text-sm text-gray-600 space-y-1">
                   <p>• Guess the country from its shape</p>
-                  <p>• You have {maxAttempts} attempts</p>
+                  <p>• You have {currentGame.max_attempts} attempts per game</p>
+                  <p>• {activeRound.games_per_round} games per round</p>
                   <p>• After each guess, see:</p>
                   <p className="ml-2">- Distance to target</p>
                   <p className="ml-2">- Direction arrow</p>
