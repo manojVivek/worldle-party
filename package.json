@@ -10,7 +10,8 @@
     "db:migrate": "supabase db push",
     "db:migrate:local": "supabase db reset",
     "db:generate-types": "supabase gen types typescript --project-id ptlnitafbuflfijdambr --schema public > src/types/database.types.ts",
-    "fetch-country-svgs": "node scripts/fetch-country-svgs.js"
+    "fetch-country-svgs": "node scripts/fetch-country-svgs.js",
+    "e2e-test": "node scripts/e2e-test.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.8",
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@playwright/test": "^1.52.0",
     "@tailwindcss/postcss": "^4",
     "@types/d3-geo": "^3.1.0",
     "@types/node": "^20",
@@ -31,6 +33,7 @@
     "@types/topojson-specification": "^1.0.5",
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
+    "playwright": "^1.52.0",
     "supabase": "^2.23.4",
     "tailwindcss": "^4",
     "typescript": "^5"
