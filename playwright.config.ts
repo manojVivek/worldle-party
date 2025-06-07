@@ -9,11 +9,12 @@ export default defineConfig({
   reporter: [
     ['html', { 
       outputFolder: process.env.E2E_REPORTS_DIR ? `${process.env.E2E_REPORTS_DIR}/playwright-report` : 'playwright-report',
-      open: 'never'
+      open: 'on-failure'
     }],
     ['json', { 
       outputFile: process.env.E2E_REPORTS_DIR ? `${process.env.E2E_REPORTS_DIR}/test-results.json` : 'test-results.json'
-    }]
+    }],
+    ['list']
   ],
   use: {
     baseURL: process.env.BASE_URL || 'http://localhost:3000',

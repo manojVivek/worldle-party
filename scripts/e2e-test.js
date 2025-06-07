@@ -57,10 +57,13 @@ async function main() {
   - App Port: ${appPort}
   `);
 
+  let appProcess;
+  let testConfigPath;
+
   // Create organized directory structure for e2e tests
   const e2eTestsDir = path.join(__dirname, '..', '.e2e-tests');
   const testRunDir = path.join(e2eTestsDir, 'runs', projectId);
-  const testConfigPath = path.join(testRunDir, 'supabase');
+  testConfigPath = path.join(testRunDir, 'supabase');
   const reportsDir = path.join(testRunDir, 'reports');
   
   fs.mkdirSync(testConfigPath, { recursive: true });
@@ -73,7 +76,36 @@ async function main() {
     { recursive: true }
   );
 
-  let appProcess;
+  // Set up cleanup on process interruption
+  const cleanup = () => {
+    console.log('\nReceived interrupt signal, cleaning up...');
+    
+    if (appProcess) {
+      console.log('Stopping Next.js app...');
+      appProcess.kill('SIGTERM');
+    }
+
+    if (testConfigPath && fs.existsSync(testConfigPath)) {
+      console.log('Stopping Supabase...');
+      try {
+        execSync(`npx supabase stop --workdir ${testConfigPath}`, { stdio: 'inherit' });
+      } catch (err) {
+        console.warn('Error stopping Supabase:', err.message);
+      }
+
+      console.log('Cleaning up test files...');
+      try {
+        fs.rmSync(testConfigPath, { recursive: true, force: true });
+      } catch (err) {
+        console.warn('Error cleaning up test files:', err.message);
+      }
+    }
+
+    process.exit(0);
+  };
+
+  process.on('SIGINT', cleanup);
+  process.on('SIGTERM', cleanup);
 
   try {
     // Start Supabase
@@ -136,7 +168,7 @@ async function main() {
       E2E_PROJECT_ID: projectId
     };
 
-    const testProcess = spawn('npx', ['playwright', 'test', '--reporter=html'], {
+    const testProcess = spawn('npx', ['playwright', 'test'], {
       stdio: 'inherit',
       env: testEnv
     });
@@ -149,7 +181,7 @@ async function main() {
           console.log(`Tests failed with code ${code}`);
         }
         
-        // Move Playwright HTML report to our reports directory
+        // Move Playwright HTML report to our reports directory and serve if failed
         try {
           const defaultReportPath = path.join(__dirname, '..', 'playwright-report');
           const targetReportPath = path.join(reportsDir, 'playwright-report');
@@ -166,7 +198,20 @@ async function main() {
         if (code === 0) {
           resolve();
         } else {
-          reject(new Error(`Tests failed with code ${code}`));
+          // For failures, start the report server but don't reject yet
+          console.log('\n🔍 Tests failed - serving HTML report for inspection...');
+          const reportPath = path.join(reportsDir, 'playwright-report');
+          if (fs.existsSync(reportPath)) {
+            console.log('📊 Starting report server...');
+            spawn('npx', ['playwright', 'show-report', reportPath], {
+              stdio: 'inherit'
+            });
+            
+            // Don't resolve/reject yet - let the user inspect and press Ctrl+C when done
+            // The cleanup handler will take care of stopping everything
+          } else {
+            reject(new Error(`Tests failed with code ${code}`));
+          }
         }
       });
     });
